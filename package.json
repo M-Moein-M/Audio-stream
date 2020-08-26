@@ -12,6 +12,8 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "lame": "^1.2.4",
+    "speaker": "^0.5.2",
     "youtube-audio-server": "^2.4.2",
     "youtube-audio-stream": "^0.3.6"
   }
