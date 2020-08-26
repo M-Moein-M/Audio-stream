@@ -1,6 +1,8 @@
 const express = require('express');
+const search = require('youtube-search');
 const fs = require('fs');
-const stream = require('youtube-audio-stream')
+require('dotenv').config();
+const stream = require('youtube-audio-stream');
 
 const app = express();
 app.use(express.static('public'));
@@ -11,12 +13,32 @@ app.listen(port, function () {
 });
 
 
-const url = 'https://www.youtube.com/watch?v=SsUjydIX2IA'
+// loading audio to page.
 
 app.get('/', function (req, res) {
     return fs.createReadStream('public/index.html').pipe(res);
 });
 
-app.get('/audio', function (rq, res) {
+
+app.get('/audio/:videoId', function (req, res) {
+    const url = `https://www.youtube.com/watch?v=${req.params.videoId}` ;
     stream(url).pipe(res);
 })
+
+
+// searching
+
+app.get('/search/:searchPhrase', function (req, res) {
+    const opts = {
+        maxResults: 7,
+        key: process.env.APP_KEY
+    };
+    const term = req.params.searchPhrase;
+    search(term, opts, (err, results) => {
+        if (err) return console.log(err);
+        res.send(results);
+    });
+
+});
+
+

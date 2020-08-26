@@ -15,6 +15,7 @@
     "lame": "^1.2.4",
     "speaker": "^0.5.2",
     "youtube-audio-server": "^2.4.2",
-    "youtube-audio-stream": "^0.3.6"
+    "youtube-audio-stream": "^0.3.6",
+    "youtube-search": "^1.1.4"
   }
 }
