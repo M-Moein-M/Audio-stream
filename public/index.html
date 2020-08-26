@@ -5,6 +5,29 @@
     <title>Audio stream</title>
 </head>
 <body>
-    <h1>Audio Stream</h1>
+<h1>Audio Stream</h1>
+
+<div id="player-div">
+
+</div>
+
+<button id="get-audio">Play</button>
+<script>
+    function addAudioPlayer() {
+        const player = new window.Audio('/audio')
+        // player.preload = 'metadata'
+        player.play()
+        player.controls = true
+        player.id = 'player'
+        document.getElementById('player-div').appendChild(player);
+    }
+
+    document.getElementById('get-audio').addEventListener('click', async function () {
+        if (document.getElementById('player')){
+            document.getElementById('player').remove();
+        }
+        addAudioPlayer();
+    });
+</script>
 </body>
 </html>
