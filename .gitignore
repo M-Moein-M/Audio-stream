@@ -1,0 +1,4 @@
+.idea
+.env
+databsae.db
+node_modules
