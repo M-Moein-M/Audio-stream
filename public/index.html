@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Audio stream</title>
+    <style>
+        #player{
+            position: absolute;
+            top: 40px;
+            right: 20px;
+        }
+    </style>
 </head>
 <body>
 <h1>Audio Stream</h1>
@@ -11,17 +18,20 @@
 </div>
 
 <div id="search-div">
-    <input id="search-input" type="text">
-    <button id="search-result">Search</button>
     <div>
-        <button id="play-audio">Play</button>
+        <input id="search-input" type="text">
+        <button id="search">Search</button>
     </div>
-</div>
+    <div id="search-results">
 
+    </div>
+
+</div>
 
 <script>
 
-    function addAudioPlayer(videoId = "hVdhuFuNL28") { // "hVdhuFuNL28" is the first result I got on this app
+    function addAudioPlayer() {
+        const videoId = this.id;
         const player = new window.Audio(`/audio/${videoId}`)
         player.preload = 'metadata'
         player.play()
@@ -30,18 +40,32 @@
         document.getElementById('player-div').appendChild(player);
     }
 
-    document.getElementById('play-audio').addEventListener('click', async function () {
-        if (document.getElementById('player')) {
-            document.getElementById('player').remove();
-        }
-        addAudioPlayer();
-    });
 
-    document.getElementById('search-result').addEventListener('click', async function () {
+    document.getElementById('search').addEventListener('click', async function () {
         const res = await fetch(`/search/${document.getElementById('search-input').value}`);
         const data = await res.json();
         console.log(data);
+        presentData(data);
     });
+
+    function presentData(data) {
+        const searchResultsDiv = document.getElementById('search-results')
+        for (let i = 0; i < data.length; i++) {
+            const newResult = document.createElement('div');
+
+            const title = document.createElement('p');
+            title.innerText = (i+1).toString()+'. '+data[i].title;
+
+            const playBtn = document.createElement('button');
+            playBtn.id = data[i].id;
+            playBtn.innerText = 'play this track';
+            playBtn.addEventListener('click', addAudioPlayer);
+
+            title.append(playBtn);
+            newResult.append(title);
+            searchResultsDiv.append(newResult);
+        }
+    }
 </script>
 </body>
 </html>
