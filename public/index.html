@@ -53,7 +53,10 @@
     });
 
     function presentData(data) {
-        const searchResultsDiv = document.getElementById('search-results')
+        const searchResultsDiv = document.getElementById('search-results');
+        while (searchResultsDiv.childElementCount > 0)
+            searchResultsDiv.firstChild.remove();
+
         for (let i = 0; i < data.length; i++) {
             const newResult = document.createElement('div');
 
