@@ -13,11 +13,6 @@ app.listen(port, function () {
     console.log(`Server is running on port ${port}`);
 });
 
-////////////
-
-
-////////
-
 
 app.get('/audio/:videoId', function (req, res) {
     const audioPath = '/home/moein/web Development/Nodejs/Audio-stream/database';   // this will cause problem after uploading the file to actual server
@@ -32,29 +27,30 @@ app.get('/audio/:videoId', function (req, res) {
 
     //Download video and save as MP3 file
     const videoID = req.params.videoId;
+    console.log(videoID);
     YD.download(videoID, `${videoID}.mp3`);
 
     YD.on("finished", function (err, data) {
         console.log('download finished');
         console.log(JSON.stringify(data));
 
-        const filePath = audioPath+`/${videoID}.mp3`;
-        const stat = fileSystem.statSync(filePath);
-
-        res.writeHead(200, {
-            'Content-Type': 'audio/mpeg',
-            'Content-Length': stat.size
-        });
-
-        const readStream = fileSystem.createReadStream(filePath);
-        // We replaced all the event handlers with a simple call to readStream.pipe()
-        readStream.pipe(res);
-
+        // const filePath = audioPath+`/${videoID}.mp3`;
+        // const stat = fileSystem.statSync(filePath);
+        //
+        // res.writeHead(200, {
+        //     'Content-Type': 'audio/mp3',
+        //     'Content-Length': stat.size
+        // });
+        //
+        // const readStream = fileSystem.createReadStream(filePath);
+        // // We replaced all the event handlers with a simple call to readStream.pipe()
+        // readStream.pipe(res);
     });
 
     YD.on("error", function (error) {
         console.log(error);
     });
+
 
 
 })
