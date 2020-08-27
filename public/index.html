@@ -32,6 +32,9 @@
 
     function addAudioPlayer() {
         const videoId = this.id;
+        // const res = await fetch(`/audio/${videoId}`);
+        // const data = res.body;
+
         const player = new window.Audio(`/audio/${videoId}`)
         player.preload = 'metadata'
         player.play()
@@ -58,12 +61,15 @@
 
             const playBtn = document.createElement('button');
             playBtn.id = data[i].id;
+            playBtn.classList.add('play-btn');
             playBtn.innerText = 'play this track';
-            playBtn.addEventListener('click', addAudioPlayer);
 
             title.append(playBtn);
             newResult.append(title);
             searchResultsDiv.append(newResult);
+        }
+        for (let btn of document.getElementsByClassName('play-btn')){
+            document.getElementById(btn.id).addEventListener('click', addAudioPlayer);
         }
     }
 </script>

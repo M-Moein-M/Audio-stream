@@ -1,8 +1,9 @@
 const express = require('express');
 const search = require('youtube-search');
-const fs = require('fs');
+const fileSystem = require('fs');
 require('dotenv').config();
-const stream = require('youtube-audio-stream');
+
+const YoutubeMp3Downloader = require("youtube-mp3-downloader");
 
 const app = express();
 app.use(express.static('public'));
@@ -12,17 +13,50 @@ app.listen(port, function () {
     console.log(`Server is running on port ${port}`);
 });
 
+////////////
 
-// loading audio to page.
 
-app.get('/', function (req, res) {
-    return fs.createReadStream('public/index.html').pipe(res);
-});
+////////
 
 
 app.get('/audio/:videoId', function (req, res) {
-    const url = `https://www.youtube.com/watch?v=${req.params.videoId}` ;
-    stream(url).pipe(res);
+    const audioPath = '/home/moein/web Development/Nodejs/Audio-stream/database';   // this will cause problem after uploading the file to actual server
+    //Configure YoutubeMp3Downloader with your settings
+    const YD = new YoutubeMp3Downloader({
+        "ffmpegPath": "/usr/bin/ffmpeg",        // Where is the FFmpeg binary located?
+        "outputPath": audioPath,    // Where should the downloaded and encoded files be stored?
+        "youtubeVideoQuality": "highest",       // What video quality should be used?
+        "queueParallelism": 2,                  // How many parallel downloads/encodes should be started?
+        "progressTimeout": 2000                 // How long should be the interval of the progress reports
+    });
+
+    //Download video and save as MP3 file
+    const videoID = req.params.videoId;
+    YD.download(videoID, `${videoID}.mp3`);
+
+    YD.on("finished", function (err, data) {
+        console.log('download finished');
+        console.log(JSON.stringify(data));
+
+        const filePath = audioPath+`/${videoID}.mp3`;
+        const stat = fileSystem.statSync(filePath);
+
+        res.writeHead(200, {
+            'Content-Type': 'audio/mpeg',
+            'Content-Length': stat.size
+        });
+
+        const readStream = fileSystem.createReadStream(filePath);
+        // We replaced all the event handlers with a simple call to readStream.pipe()
+        readStream.pipe(res);
+
+    });
+
+    YD.on("error", function (error) {
+        console.log(error);
+    });
+
+
 })
 
 
