@@ -1,0 +1,79 @@
+* {
+    text-decoration: none;
+    font-family: 'Zilla Slab', serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #313131;
+    color: #FF8A65;
+}
+
+#player {
+    position: absolute;
+    top: 40px;
+    right: 20px;
+}
+
+button {
+    padding: 20px;
+    background-color: #EEEEEE;
+    border: none;
+    border-radius: 5px;
+    margin: 10px;
+    transition-duration: 0.2s;
+    color: #2b2b2b;
+    font-size: 1.1rem;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+input {
+    font-family: 'Zilla Slab', serif;
+    font-size: 22px;
+    width: 300px;
+    height: 50px;
+    border-radius: 5px;
+    margin: 10px 0 10px 0;
+    text-align: center;
+
+    background-color: #EEEEEE;
+    color: #2b2b2b;
+}
+
+p, h1 {
+    text-align: center;
+    user-select: none;
+}
+#header{
+    width: 300px;
+    animation: wobble 1.2s linear; /* referring directly to the animation's @keyframe declaration */
+}
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+}
+
+.search-play-btn{
+
+    width: 30px;
+    height: 30px;
+    background-image: url("assets/play.svg");
+
+    background-size: cover;
+    background-color: initial;
+
+    cursor: pointer;
+}
+
+.search-result-paragraph{
+    transition-duration: 0.3s;
+}
+
+.search-result-div:hover{
+    color: #ffccb6;
+}
