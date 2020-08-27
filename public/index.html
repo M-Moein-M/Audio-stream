@@ -30,18 +30,15 @@
 
 <script>
 
-    async function addAudioPlayer() {
+    function addAudioPlayer() {
         const videoId = this.id;
-        const res = await fetch(`/audio/${videoId}`);
-        const data = await res.body;
-        console.log(data);
 
-        // const player = new window.Audio(`/audio/${videoId}`)
-        // player.preload = 'metadata'
-        // player.play()
-        // player.controls = true
-        // player.id = 'player'
-        // document.getElementById('player-div').appendChild(player);
+        const player = new window.Audio(`/audio/${videoId}`)
+        player.preload = 'metadata'
+        player.play()
+        player.controls = true
+        player.id = 'player'
+        document.getElementById('player-div').appendChild(player);
     }
 
 

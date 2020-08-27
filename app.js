@@ -34,24 +34,23 @@ app.get('/audio/:videoId', function (req, res) {
         console.log('download finished');
         console.log(JSON.stringify(data));
 
-        // const filePath = audioPath+`/${videoID}.mp3`;
-        // const stat = fileSystem.statSync(filePath);
-        //
-        // res.writeHead(200, {
-        //     'Content-Type': 'audio/mp3',
-        //     'Content-Length': stat.size
-        // });
-        //
-        // const readStream = fileSystem.createReadStream(filePath);
-        // // We replaced all the event handlers with a simple call to readStream.pipe()
-        // readStream.pipe(res);
+        // stream the audio
+        const filePath = `database/${videoID}.mp3`;
+        const stat = fileSystem.statSync(filePath);
+
+        res.writeHead(200, {
+            'Content-Type': 'audio/mp3',
+            'Content-Length': stat.size
+        });
+
+        const readStream = fileSystem.createReadStream(filePath);
+        // We replaced all the event handlers with a simple call to readStream.pipe()
+        readStream.pipe(res);
     });
 
     YD.on("error", function (error) {
         console.log(error);
     });
-
-
 
 })
 
