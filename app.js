@@ -1,6 +1,7 @@
 const express = require('express');
 const search = require('youtube-search');
 const fileSystem = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const YoutubeMp3Downloader = require("youtube-mp3-downloader");
@@ -15,10 +16,10 @@ app.listen(port, function () {
 
 
 app.get('/audio/:videoId', function (req, res) {
-    const audioPath = '/home/moein/web Development/Nodejs/Audio-stream/database';   // this will cause problem after uploading the file to actual server
-    //Configure YoutubeMp3Downloader with your settings
-    const YD = new YoutubeMp3Downloader({
-        "ffmpegPath": "/usr/bin/ffmpeg",        // Where is the FFmpeg binary located?
+    const audioPath = path.join(__dirname,'database' ); // the folder to store the mp3 files
+    
+    const YD = new YoutubeMp3Downloader({ //Configure YoutubeMp3Downloader with your settings
+        "ffmpegPath": path.join(__dirname,"ffmpeg"), // Where is the FFmpeg binary located? I moved it to the current directory
         "outputPath": audioPath,    // Where should the downloaded and encoded files be stored?
         "youtubeVideoQuality": "highest",       // What video quality should be used?
         "queueParallelism": 2,                  // How many parallel downloads/encodes should be started?
@@ -35,7 +36,7 @@ app.get('/audio/:videoId', function (req, res) {
         console.log(JSON.stringify(data));
 
         // stream the audio
-        const filePath = `database/${videoID}.mp3`;
+        const filePath = path.join(__dirname, 'database', `${videoID}.mp3`);
         const stat = fileSystem.statSync(filePath);
 
         res.writeHead(200, {
