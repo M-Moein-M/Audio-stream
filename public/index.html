@@ -3,25 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Audio stream</title>
-    <style>
-        #player{
-            position: absolute;
-            top: 40px;
-            right: 20px;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Audio Stream</h1>
-
+<div class="flex-container">
+    <h1 id="header">Audio Stream</h1>
+</div>
 <div id="player-div">
 </div>
 
 <div id="search-div">
-    <div>
+    <div class="flex-container">
         <input id="search-input" type="text">
         <button id="search">Search</button>
     </div>
+
     <div id="search-results">
 
     </div>
@@ -51,25 +49,27 @@
 
     function presentData(data) {
         const searchResultsDiv = document.getElementById('search-results');
-        while (searchResultsDiv.childElementCount > 0)
+        while (searchResultsDiv.childElementCount > 0) // clears the previous results before showing the current results
             searchResultsDiv.firstChild.remove();
 
         for (let i = 0; i < data.length; i++) {
             const newResult = document.createElement('div');
+            newResult.classList.add('search-result-div')
 
             const title = document.createElement('p');
-            title.innerText = (i+1).toString()+'. '+data[i].title;
+            title.innerText = (i + 1).toString() + '. ' + data[i].title;
+            title.classList.add('search-result-paragraph')
 
             const playBtn = document.createElement('button');
             playBtn.id = data[i].id;
-            playBtn.classList.add('play-btn');
-            playBtn.innerText = 'play this track';
+            playBtn.classList.add('search-play-btn');
+            playBtn.innerText = '';
 
             title.append(playBtn);
             newResult.append(title);
             searchResultsDiv.append(newResult);
         }
-        for (let btn of document.getElementsByClassName('play-btn')){
+        for (let btn of document.getElementsByClassName('search-play-btn')) {
             document.getElementById(btn.id).addEventListener('click', addAudioPlayer);
         }
     }
