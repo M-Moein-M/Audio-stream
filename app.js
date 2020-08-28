@@ -27,34 +27,44 @@ const YD = new YoutubeMp3Downloader({
   progressTimeout: 2000, // How long should be the interval of the progress reports
 });
 
+// streams the requested audio
 app.get("/audio/:videoId", function (req, res) {
-  //Download video and save as MP3 file
   const videoID = req.params.videoId;
-  console.log(videoID);
-  YD.download(videoID, `${videoID}.mp3`);
+  // if the requested file doesn't exist in database the app will download it
+  if (!database.find({ videoID: videoID })) {
+    //Download video and save as MP3 file
+    console.log(videoID);
+    YD.download(videoID, `${videoID}.mp3`);
 
-  YD.on("finished", function (err, data) {
-    console.log("download finished");
-    console.log(JSON.stringify(data));
-
-    // stream the audio
-    const filePath = path.join(__dirname, "database", `${videoID}.mp3`);
-    const stat = fileSystem.statSync(filePath);
-
-    res.writeHead(200, {
-      "Content-Type": "audio/mp3",
-      "Content-Length": stat.size,
+    YD.on("finished", function (err, data) {
+      console.log("download finished");
+      console.log(JSON.stringify(data));
+      insertVideo(videoID); // inserts the new downloaded video to database
+      streamAudio(videoID, res);
     });
 
-    const readStream = fileSystem.createReadStream(filePath);
-    // We replaced all the event handlers with a simple call to readStream.pipe()
-    readStream.pipe(res);
+    YD.on("error", function (error) {
+      console.log(error);
+    });
+  } else {
+    streamAudio(videoID, res);
+  }
+});
+
+function streamAudio(videoID, res) {
+  // stream the audio
+  const filePath = path.join(__dirname, "database", `${videoID}.mp3`);
+  const stat = fileSystem.statSync(filePath);
+
+  res.writeHead(200, {
+    "Content-Type": "audio/mp3",
+    "Content-Length": stat.size,
   });
 
-  YD.on("error", function (error) {
-    console.log(error);
-  });
-});
+  const readStream = fileSystem.createReadStream(filePath);
+  // We replaced all the event handlers with a simple call to readStream.pipe()
+  readStream.pipe(res);
+}
 
 // database managment
 
@@ -80,20 +90,31 @@ function loadDatabase() {
     if (err) {
       return console.log("Unable to scan directory: " + err);
     }
+
     // get the title of each audio to save it in data base
     for (let i = 0; i < files.length; i++) {
+      // if the file is mp3 file
       if (files[i].includes(".mp3")) {
-        // if the file is mp3 file
         const videoID = files[i].replace(".mp3", "");
-        getVideoTitle(videoID, (title) => {
-          console.log(videoID, "====>", title);
-        });
+        insertVideo(videoID);
       }
     }
   });
 }
 
-// getVideoTitle("akvGANKiiY8");
+//inserts the video information to database
+function insertVideo(videoID) {
+  getVideoTitle(videoID, (title) => {
+    // if the video doesnt exists in database then inserts it
+    if (!database.find({ videoID: videoID })) {
+      const videoData = {
+        videoID: videoID,
+        videoTitle: title,
+      };
+      database.insert(videoData);
+    }
+  });
+}
 
 async function getVideoTitle(videoID, callBackFunc) {
   // returns details of the input video
