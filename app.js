@@ -1,6 +1,6 @@
 const express = require("express");
 const search = require("youtube-search");
-const fileSystem = require("fs");
+const fs = require("fs");
 const path = require("path");
 const fetch = require("node-fetch");
 const Datastore = require("nedb");
@@ -31,58 +31,61 @@ const YD = new YoutubeMp3Downloader({
 app.get("/audio/:videoId", function (req, res) {
   const videoID = req.params.videoId;
   // if the requested file doesn't exist in database the app will download it
-  if (!database.find({ videoID: videoID })) {
-    //Download video and save as MP3 file
-    console.log(videoID);
-    YD.download(videoID, `${videoID}.mp3`);
+  // if the video doesnt exists in database then inserts it
+  database.find({ videoID: videoID }, (err, docs) => {
+    if (docs.length === 0) {
+      //Download video and save as MP3 file
+      console.log(`Downloading ${videoID}...`);
+      YD.download(videoID, `${videoID}.mp3`);
 
-    YD.on("finished", function (err, data) {
-      console.log("download finished");
-      console.log(JSON.stringify(data));
-      insertVideo(videoID); // inserts the new downloaded video to database
+      YD.on("finished", function (err, data) {
+        console.log(`Finished downloading${videoID}`);
+
+        insertVideo(videoID); // inserts the new downloaded video to database
+        streamAudio(videoID, res);
+      });
+
+      YD.on("error", function (error) {
+        console.log(error);
+      });
+    } else {
       streamAudio(videoID, res);
-    });
-
-    YD.on("error", function (error) {
-      console.log(error);
-    });
-  } else {
-    streamAudio(videoID, res);
-  }
+    }
+  });
 });
 
 function streamAudio(videoID, res) {
   // stream the audio
   const filePath = path.join(__dirname, "database", `${videoID}.mp3`);
-  const stat = fileSystem.statSync(filePath);
+  const stat = fs.statSync(filePath);
 
   res.writeHead(200, {
     "Content-Type": "audio/mp3",
     "Content-Length": stat.size,
   });
 
-  const readStream = fileSystem.createReadStream(filePath);
+  const readStream = fs.createReadStream(filePath);
   // We replaced all the event handlers with a simple call to readStream.pipe()
   readStream.pipe(res);
 }
 
 // database managment
-
 const database = new Datastore({
   filename: path.join(__dirname, "database", "database.db"),
 });
 
 // loading database
 database.loadDatabase((err) => {
-  if (!err) console.log("Database loaded");
-  else console.log(err);
+  if (!err) {
+    console.log("Database loaded");
+    initDatabase();
+  } else {
+    console.log(err);
+  }
 });
 
-const fs = require("fs");
-loadDatabase();
-
 // inserts information about downloaded mp3 tracks to the database
-function loadDatabase() {
+function initDatabase() {
   const databaseDir = path.join(__dirname, "database"); // where all mp3 files are stored
 
   fs.readdir(databaseDir, function (err, files) {
@@ -94,8 +97,10 @@ function loadDatabase() {
     // get the title of each audio to save it in data base
     for (let i = 0; i < files.length; i++) {
       // if the file is mp3 file
+
       if (files[i].includes(".mp3")) {
         const videoID = files[i].replace(".mp3", "");
+        console.log(`Added ${videoID}.mp3 to the databse`);
         insertVideo(videoID);
       }
     }
@@ -106,13 +111,15 @@ function loadDatabase() {
 function insertVideo(videoID) {
   getVideoTitle(videoID, (title) => {
     // if the video doesnt exists in database then inserts it
-    if (!database.find({ videoID: videoID })) {
-      const videoData = {
-        videoID: videoID,
-        videoTitle: title,
-      };
-      database.insert(videoData);
-    }
+    database.find({ videoID: videoID }, (err, docs) => {
+      if (docs.length === 0) {
+        const videoData = {
+          videoID: videoID,
+          videoTitle: title,
+        };
+        database.insert(videoData);
+      }
+    });
   });
 }
 

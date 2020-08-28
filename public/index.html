@@ -1,78 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Audio stream</title>
-    <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="flex-container">
-    <h1 id="header">Audio Stream</h1>
-</div>
-<div id="player-div">
-</div>
-
-<div id="search-div">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="flex-container">
-        <input id="search-input" type="text">
+      <h1 id="header">Audio Stream</h1>
+    </div>
+    <div id="player-div"></div>
+
+    <div id="search-div">
+      <div class="flex-container">
+        <input id="search-input" type="text" spellcheck="false" />
         <button id="search">Search</button>
+      </div>
+
+      <div id="search-results"></div>
     </div>
 
-    <div id="search-results">
-
-    </div>
-
-</div>
-
-<script>
-
-    function addAudioPlayer() {
+    <script>
+      function addAudioPlayer() {
         const videoId = this.id;
+        console.log(videoId);
+        const player = new window.Audio(`/audio/${videoId}`);
+        player.preload = "metadata";
+        player.play();
+        player.controls = true;
+        player.id = "player";
+        document.getElementById("player-div").appendChild(player);
+      }
 
-        const player = new window.Audio(`/audio/${videoId}`)
-        player.preload = 'metadata'
-        player.play()
-        player.controls = true
-        player.id = 'player'
-        document.getElementById('player-div').appendChild(player);
-    }
+      document
+        .getElementById("search")
+        .addEventListener("click", async function () {
+          const res = await fetch(
+            `/search/${document.getElementById("search-input").value}`
+          );
+          const data = await res.json();
+          console.log(data);
+          presentData(data);
+        });
 
-
-    document.getElementById('search').addEventListener('click', async function () {
-        const res = await fetch(`/search/${document.getElementById('search-input').value}`);
-        const data = await res.json();
-        console.log(data);
-        presentData(data);
-    });
-
-    function presentData(data) {
-        const searchResultsDiv = document.getElementById('search-results');
-        while (searchResultsDiv.childElementCount > 0) // clears the previous results before showing the current results
-            searchResultsDiv.firstChild.remove();
+      function presentData(data) {
+        const searchResultsDiv = document.getElementById("search-results");
+        while (
+          searchResultsDiv.childElementCount > 0 // clears the previous results before showing the current results
+        )
+          searchResultsDiv.firstChild.remove();
 
         for (let i = 0; i < data.length; i++) {
-            const newResult = document.createElement('div');
-            newResult.classList.add('search-result-div')
+          const newResult = document.createElement("div");
+          newResult.classList.add("search-result-div");
 
-            const title = document.createElement('p');
-            title.innerText = (i + 1).toString() + '. ' + data[i].title;
-            title.classList.add('search-result-paragraph')
+          const title = document.createElement("p");
+          title.innerText = (i + 1).toString() + ". " + data[i].title;
+          title.classList.add("search-result-paragraph");
 
-            const playBtn = document.createElement('button');
-            playBtn.id = data[i].id;
-            playBtn.classList.add('search-play-btn');
-            playBtn.innerText = '';
+          const playBtn = document.createElement("button");
+          playBtn.id = data[i].id;
+          playBtn.classList.add("search-play-btn");
+          playBtn.innerText = "";
 
-            title.append(playBtn);
-            newResult.append(title);
-            searchResultsDiv.append(newResult);
+          title.append(playBtn);
+          newResult.append(title);
+          searchResultsDiv.append(newResult);
         }
-        for (let btn of document.getElementsByClassName('search-play-btn')) {
-            document.getElementById(btn.id).addEventListener('click', addAudioPlayer);
+        for (let btn of document.getElementsByClassName("search-play-btn")) {
+          document
+            .getElementById(btn.id)
+            .addEventListener("click", addAudioPlayer);
         }
-    }
-</script>
-</body>
+      }
+    </script>
+  </body>
 </html>
