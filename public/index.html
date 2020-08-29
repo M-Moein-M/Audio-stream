@@ -22,10 +22,14 @@
     <div id="search-div">
       <div class="flex-container">
         <input id="search-input" type="text" spellcheck="false" />
+      </div>
+      <div class="flex-container">
         <button id="search">Search</button>
+        <button id="show-playlist">Show/Hide playlist</button>
       </div>
 
       <div id="search-results"></div>
+      <div id="playlist"></div>
     </div>
 
     <script>
@@ -80,6 +84,20 @@
             .getElementById(btn.id)
             .addEventListener("click", addAudioPlayer);
         }
+      }
+
+      document
+        .getElementById("show-playlist")
+        .addEventListener("click", function () {
+          togglePlaylist();
+        });
+
+      function togglePlaylist() {
+        document.getElementById("search-results").classList.toggle("hide");
+        document.getElementById("playlist").classList.toggle("hide");
+        document.getElementById("search").classList.toggle("hide");
+        if (document.getElementById("playlist").classList.contains("hide"))
+          console.log("load from server");
       }
     </script>
   </body>

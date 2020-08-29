@@ -29,29 +29,33 @@ const YD = new YoutubeMp3Downloader({
 
 // streams the requested audio
 app.get("/audio/:videoId", function (req, res) {
-  const videoID = req.params.videoId;
-  // if the requested file doesn't exist in database the app will download it
-  // if the video doesnt exists in database then inserts it
-  database.find({ videoID: videoID }, (err, docs) => {
-    if (docs.length === 0) {
-      //Download video and save as MP3 file
-      console.log(`Downloading ${videoID}...`);
-      YD.download(videoID, `${videoID}.mp3`);
+  try {
+    const videoID = req.params.videoId;
+    // if the requested file doesn't exist in database the app will download it
+    // if the video doesnt exists in database then inserts it
+    database.find({ videoID: videoID }, (err, docs) => {
+      if (docs.length === 0) {
+        //Download video and save as MP3 file
+        console.log(`Downloading ${videoID}...`);
+        YD.download(videoID, `${videoID}.mp3`);
 
-      YD.on("finished", function (err, data) {
-        console.log(`Finished downloading${videoID}`);
+        YD.on("finished", function (err, data) {
+          console.log(`Finished downloading${videoID}`);
 
-        insertVideo(videoID); // inserts the new downloaded video to database
+          insertVideo(videoID); // inserts the new downloaded video to database
+          streamAudio(videoID, res);
+        });
+
+        YD.on("error", function (error) {
+          console.log(error);
+        });
+      } else {
         streamAudio(videoID, res);
-      });
-
-      YD.on("error", function (error) {
-        console.log(error);
-      });
-    } else {
-      streamAudio(videoID, res);
-    }
-  });
+      }
+    });
+  } catch (error) {
+    console.log("@@@Error in get request /audio/videoId: ", error);
+  }
 });
 
 function streamAudio(videoID, res) {
@@ -124,12 +128,16 @@ function insertVideo(videoID) {
 }
 
 async function getVideoTitle(videoID, callBackFunc) {
-  // returns details of the input video
-  const requestURL = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${process.env.APP_KEY}`;
-  const response = await fetch(requestURL);
-  const data = await response.json();
-  const detail = data.items[0].snippet.localized.title;
-  callBackFunc(detail);
+  try {
+    // returns details of the input video
+    const requestURL = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${process.env.APP_KEY}`;
+    const response = await fetch(requestURL);
+    const data = await response.json();
+    const detail = data.items[0].snippet.localized.title;
+    callBackFunc(detail);
+  } catch (error) {
+    console.log("@@@Error in getVideoTitle function: ", error);
+  }
 }
 
 // searching
