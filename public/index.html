@@ -25,18 +25,20 @@
       </div>
       <div class="flex-container">
         <button id="search">Search</button>
-        <button id="show-playlist">Show/Hide playlist</button>
+        <button id="show-playlist">Show playlist</button>
       </div>
 
       <div id="search-results"></div>
-      <div id="playlist"></div>
+      <div id="playlist" class="hide"></div>
     </div>
 
     <script>
+      const player = new window.Audio();
       function addAudioPlayer() {
-        const videoId = this.id;
+        const videoId = String(this.id).replace("@playlist", "");
         console.log(videoId);
-        const player = new window.Audio(`/audio/${videoId}`);
+        player.src = `/audio/${videoId}`;
+        player;
         player.preload = "metadata";
         player.play();
         player.controls = true;
@@ -96,8 +98,53 @@
         document.getElementById("search-results").classList.toggle("hide");
         document.getElementById("playlist").classList.toggle("hide");
         document.getElementById("search").classList.toggle("hide");
-        if (document.getElementById("playlist").classList.contains("hide"))
-          console.log("load from server");
+        document.getElementById("show-playlist").innerText = "Show playlist";
+
+        if (!document.getElementById("playlist").classList.contains("hide")) {
+          document.getElementById("show-playlist").innerText = "Hide playlist"; // changes the inner text of show playlist btn to make more sence for user to hide and show playlist
+          loadPlaylist();
+        }
+      }
+      async function loadPlaylist() {
+        const getPlaylistURL = "/playlist/get";
+        const res = await fetch(getPlaylistURL);
+        const data = await res.json();
+        console.log(data);
+        presentPlaylist(data.userPlaylist);
+      }
+
+      function presentPlaylist(data) {
+        console.log("blah", data);
+        const playlistDiv = document.getElementById("playlist");
+        while (
+          playlistDiv.childElementCount > 0 // clears the playlist
+        )
+          playlistDiv.firstChild.remove();
+
+        // adding elements to the DOM
+        for (let i = 0; i < data.length; i++) {
+          const newResult = document.createElement("div");
+          newResult.classList.add("playlist-div");
+
+          const title = document.createElement("p");
+          title.innerText = (i + 1).toString() + ". " + data[i].videoTitle;
+          title.classList.add("playlist-paragraph");
+
+          const playBtn = document.createElement("button");
+          playBtn.id = data[i].videoID + "@playlist"; // determines that this play btn is for playlist(not to be confused with search play btn)
+          playBtn.classList.add("playlist-play-btn");
+          playBtn.innerText = "";
+
+          title.append(playBtn);
+          newResult.append(title);
+          playlistDiv.append(newResult);
+          console.log("appended");
+        }
+        for (let btn of document.getElementsByClassName("playlist-play-btn")) {
+          document
+            .getElementById(btn.id)
+            .addEventListener("click", addAudioPlayer);
+        }
       }
     </script>
   </body>

@@ -120,6 +120,7 @@ function insertVideo(videoID) {
         const videoData = {
           videoID: videoID,
           videoTitle: title,
+          playlist: false,
         };
         database.insert(videoData);
       }
@@ -151,5 +152,14 @@ app.get("/search/:searchPhrase", function (req, res) {
   search(term, opts, (err, results) => {
     if (err) return console.log(err);
     res.send(results);
+  });
+});
+
+// managing playlist
+// playlist attribute in database shows whether the mp3 file is on user's playlist or not
+app.get("/playlist/get", function (req, res) {
+  database.find({ playlist: true }, (err, docs) => {
+    if (err) throw err;
+    res.json({ userPlaylist: docs });
   });
 });

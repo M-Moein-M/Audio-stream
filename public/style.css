@@ -59,7 +59,8 @@ h1 {
   justify-content: center;
 }
 
-.search-play-btn {
+.search-play-btn,
+.playlist-play-btn {
   width: 30px;
   height: 30px;
   background-image: url("assets/play.svg");
@@ -70,11 +71,13 @@ h1 {
   cursor: pointer;
 }
 
-.search-result-paragraph {
+.search-result-paragraph,
+.playlist-paragraph {
   transition-duration: 0.2s;
 }
 
-.search-result-div:hover {
+.search-result-div:hover,
+.playlist-div:hover {
   color: #ffccb6;
 }
 
