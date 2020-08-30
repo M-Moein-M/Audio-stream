@@ -17,7 +17,6 @@ body {
 }
 
 button {
-  padding: 20px;
   background-color: #eeeeee;
   border: none;
   border-radius: 5px;
@@ -46,11 +45,13 @@ input {
 
 p,
 h1 {
-  text-align: center;
   user-select: none;
 }
+p{
+  width: 500px;
+}
 #header {
-  width: 300px;
+  width: 200px;
   animation: wobble 1.2s linear; /* referring directly to the animation's @keyframe declaration */
 }
 
@@ -95,11 +96,29 @@ h1 {
   transition-duration: 0.2s;
 }
 
+.playlist-div,.search-result-div{
+  
+  border: 2px #313131 solid;
+  border-radius: 10px;
+
+  padding: 10px;
+  margin-bottom: 10px;
+
+  transition-duration: 0.2s;
+}
+
 .search-result-div:hover,
 .playlist-div:hover {
   color: #ffccb6;
+  border: 2px #e54304 solid;
+  border-radius: 10px;
 }
 
 .hide {
   display: none;
 }
+
+#search, #show-playlist{
+  padding: 10px;
+}
+

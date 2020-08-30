@@ -46,8 +46,7 @@ function presentData(data) {
     addToPlaylistBtn.classList.add("addto-playlist-btn");
     addToPlaylistBtn.addEventListener("click", addAudioToPlaylist);
 
-    title.append(playBtn, addToPlaylistBtn);
-    newResult.append(title);
+    newResult.append(title, playBtn, addToPlaylistBtn);
     searchResultsDiv.append(newResult);
   }
   
@@ -118,8 +117,7 @@ function presentPlaylist(data) {
     removeBtn.classList.add("removefrom-playlist-btn");
     removeBtn.addEventListener('click', removeAudioFromPlaylist);
 
-    title.append(playBtn, removeBtn);
-    newResult.append(title);
+    newResult.append(title, playBtn, removeBtn);
     playlistDiv.append(newResult);
   }
 
