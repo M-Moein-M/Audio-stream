@@ -128,6 +128,7 @@ function presentPlaylist(data) {
     const deleteRequestURL = `/playlist/delete/${videoID}`;
     const res = await fetch(deleteRequestURL, {method:'DELETE'});
     const data = await res.text();
+    loadPlaylist();
     console.log(data);
   }
 
