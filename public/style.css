@@ -74,7 +74,16 @@ h1 {
 .addto-playlist-btn{
   width: 30px;
   height: 30px;
-  background-image: url("assets/add.svg");
+  background-image: url("assets/plus.svg");
+
+  background-size: cover;
+  background-color: initial;
+  cursor: pointer;
+}
+.removefrom-playlist-btn{
+  width: 30px;
+  height: 30px;
+  background-image: url("assets/minus.svg");
 
   background-size: cover;
   background-color: initial;

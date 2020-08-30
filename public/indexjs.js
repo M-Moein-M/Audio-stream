@@ -111,14 +111,24 @@ function presentPlaylist(data) {
     const playBtn = document.createElement("button");
     playBtn.id = data[i].videoID + "@playlist"; // determines that this play btn is for playlist(not to be confused with search play btn)
     playBtn.classList.add("playlist-play-btn");
-    playBtn.innerText = "";
+    playBtn.addEventListener("click", addAudioPlayer);
+    
+    const removeBtn = document.createElement("button");
+    removeBtn.id = data[i].videoID + "@remove-playlist"; // determines that this play btn is for playlist(not to be confused with search play btn)
+    removeBtn.classList.add("removefrom-playlist-btn");
+    removeBtn.addEventListener('click', removeAudioFromPlaylist);
 
-    title.append(playBtn);
+    title.append(playBtn, removeBtn);
     newResult.append(title);
     playlistDiv.append(newResult);
-    console.log("appended");
   }
-  for (let btn of document.getElementsByClassName("playlist-play-btn")) {
-    document.getElementById(btn.id).addEventListener("click", addAudioPlayer);
+
+  async function removeAudioFromPlaylist(){
+    const videoID = this.id.toString().replace('@remove-playlist', '');
+    const deleteRequestURL = `/playlist/delete/${videoID}`;
+    const res = await fetch(deleteRequestURL, {method:'DELETE'});
+    const data = await res.text();
+    console.log(data);
   }
+
 }

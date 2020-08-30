@@ -208,3 +208,19 @@ app.post('/playlist/add', (req, res)=>{
     }
   });  
 });
+
+
+// handling request to remove audio from playlist
+
+app.delete('/playlist/delete/:videoID', (req, res)=>{
+  const videoID = req.params.videoID;
+  deleteAudioFromPlaylist(videoID);
+  console.log(`received delete request for ${videoID}`);
+  res.send('Delete request received');
+});
+
+function deleteAudioFromPlaylist(videoID){
+  database.update({videoID:videoID}, {$set:{playlist:false}},{}, (err, numReplaced)=>{
+    if (err) throw err;
+  });
+}
