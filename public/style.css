@@ -71,6 +71,16 @@ h1 {
   cursor: pointer;
 }
 
+.addto-playlist-btn{
+  width: 30px;
+  height: 30px;
+  background-image: url("assets/add.svg");
+
+  background-size: cover;
+  background-color: initial;
+  cursor: pointer;
+}
+
 .search-result-paragraph,
 .playlist-paragraph {
   transition-duration: 0.2s;

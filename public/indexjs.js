@@ -20,6 +20,7 @@ document.getElementById("search").addEventListener("click", async function () {
   presentData(data);
 });
 
+// presenting the search results on the DOM
 function presentData(data) {
   const searchResultsDiv = document.getElementById("search-results");
   while (
@@ -38,15 +39,32 @@ function presentData(data) {
     const playBtn = document.createElement("button");
     playBtn.id = data[i].id;
     playBtn.classList.add("search-play-btn");
-    playBtn.innerText = "";
+    playBtn.addEventListener("click", addAudioPlayer);
+    
+    const addToPlaylistBtn = document.createElement("button");
+    addToPlaylistBtn.id = data[i].id+'@addAudio';
+    addToPlaylistBtn.classList.add("addto-playlist-btn");
+    addToPlaylistBtn.addEventListener("click", addAudioToPlaylist);
 
-    title.append(playBtn);
+    title.append(playBtn, addToPlaylistBtn);
     newResult.append(title);
     searchResultsDiv.append(newResult);
   }
-  for (let btn of document.getElementsByClassName("search-play-btn")) {
-    document.getElementById(btn.id).addEventListener("click", addAudioPlayer);
-  }
+  
+}
+
+// sends request to add the audio to playlist
+async function addAudioToPlaylist(){
+  const videoId = this.id.toString().replace('@addAudio','');
+  const addAudioRequestURL = `/playlist/add`;
+
+  const res = await fetch(addAudioRequestURL, {
+    method: 'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({videoId})
+  })
+  const data = await res.text();
+  console.log(data);
 }
 
 document.getElementById("show-playlist").addEventListener("click", function () {
@@ -72,8 +90,9 @@ async function loadPlaylist() {
   presentPlaylist(data.userPlaylist);
 }
 
+
 function presentPlaylist(data) {
-  console.log("blah", data);
+  console.log(data);
   const playlistDiv = document.getElementById("playlist");
   while (
     playlistDiv.childElementCount > 0 // clears the playlist
